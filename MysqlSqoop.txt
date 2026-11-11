@@ -1,0 +1,21 @@
+mysql -u root -p
+CREATE DATABASE company;
+USE company;
+CREATE TABLE salaries (gender VARCHAR(1), age INT, salary INT, zip VARCHAR(10));
+LOAD DATA LOCAL INFILE '/home/cloudera/hdp/pigandhive/labs/Lab3.1/salaries.txt' INTO TABLE salaries FIELDS TERMINATED BY ',' ;
+SELECT * FROM salaries;
+SELECT COUNT(*) FROM salaries;
+EXIT;
+
+#Importing from file 
+sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/company --driver com.mysql.jdbc.Driver --username root --password cloudera 
+
+
+#with target dir
+sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/company --driver com.mysql.jdbc.Driver --username root --password cloudera--table salaries --target-dir /user/cloudera/sqoop/salaries -m 1
+
+#specific collumns 
+sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/company --driver com.mysql.jdbc.Driver --username root --password cloudera --table salaries --columns gender,age,salary --target-dir /user/cloudera/sqoop/specific_columns -m 1
+
+#query se 
+sqoop import --connect jdbc:mysql://quickstart.cloudera:3306/company --driver com.mysql.jdbc.Driver --username root --password cloudera --query "SELECT gender,age,salary,zip FROM salaries WHERE salary > 50000 AND \$CONDITIONS" --target-dir /user/cloudera/sqoop/query_import -m 1
